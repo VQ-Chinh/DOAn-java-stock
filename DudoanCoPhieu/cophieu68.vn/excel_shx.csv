@@ -1,0 +1,4 @@
+<Ticker>,<DTYYYYMMDD>,<OpenFixed>,<HighFixed>,<LowFixed>,<CloseFixed>,<Volume>,<Open>,<High>,<Low>,<Close>,<VolumeDeal>,<VolumeFB>,<VolumeFS>
+SHX,20170614,4.50,4.50,4.50,4.50,1600,4.50,4.50,4.50,4.50,0,0,0
+SHX,20170308,5.00,5.00,5.00,5.00,900,5.00,5.00,5.00,5.00,0,0,0
+SHX,20161011,8.20,8.20,8.20,8.20,2500,8.20,8.20,8.20,8.20,0,0,0

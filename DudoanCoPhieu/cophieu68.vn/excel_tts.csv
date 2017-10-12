@@ -1,0 +1,4 @@
+<Ticker>,<DTYYYYMMDD>,<OpenFixed>,<HighFixed>,<LowFixed>,<CloseFixed>,<Volume>,<Open>,<High>,<Low>,<Close>,<VolumeDeal>,<VolumeFB>,<VolumeFS>
+TTS,20170607,7.30,7.30,7.30,7.30,100,7.30,7.30,7.30,7.30,0,0,0
+TTS,20170531,6.40,6.40,6.40,6.40,100,6.40,6.40,6.40,6.40,0,0,0
+TTS,20170519,5.60,5.60,5.60,5.60,100,5.60,5.60,5.60,5.60,0,0,0

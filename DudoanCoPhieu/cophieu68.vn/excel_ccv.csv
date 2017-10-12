@@ -1,0 +1,3 @@
+<Ticker>,<DTYYYYMMDD>,<OpenFixed>,<HighFixed>,<LowFixed>,<CloseFixed>,<Volume>,<Open>,<High>,<Low>,<Close>,<VolumeDeal>,<VolumeFB>,<VolumeFS>
+CCV,20170224,7.13,7.13,7.13,7.13,100,8.00,8.00,8.00,8.00,0,0,0
+CCV,20170223,8.20,8.20,8.20,8.20,100,9.20,9.20,9.20,9.20,0,0,0

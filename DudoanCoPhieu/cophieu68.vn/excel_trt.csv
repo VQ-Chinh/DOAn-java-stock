@@ -1,0 +1,3 @@
+<Ticker>,<DTYYYYMMDD>,<OpenFixed>,<HighFixed>,<LowFixed>,<CloseFixed>,<Volume>,<Open>,<High>,<Low>,<Close>,<VolumeDeal>,<VolumeFB>,<VolumeFS>
+TRT,20170427,16.90,16.90,16.90,16.90,1000,16.90,16.90,16.90,16.90,0,0,0
+TRT,20170426,14.70,14.70,14.70,14.70,100,14.70,14.70,14.70,14.70,0,0,0
