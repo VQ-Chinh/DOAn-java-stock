@@ -8,6 +8,7 @@ public class TinhCoPhieu {
 	public List<CoPhieu> Ds100CoPhieu = new ArrayList<CoPhieu>();
 	public List<CoPhieu> Ds100CoPhieuDaSapXep;
 	public List<Cum> listCentroid;
+	public String ThoiGianBatDau;
 	public Float TiLeLoiNhuan = 0.0f;
 	public int CumTotNhat;
 
@@ -17,14 +18,14 @@ public class TinhCoPhieu {
 	}
 
 	public void layDanhSachCoPhieu() {
-		File dir = new File("cophieu68.vn_Revert/");
+		File dir = new File("cophieu68.vn_Choice/");
 		String[] children = dir.list();
 		if (children == null) {
 			System.out.println("Either dir does not exist or is not a directory");
 		} else {
 			CoPhieu cp;
 
-			for (int i = 1; i < 101; i++) {
+			for (int i = 0; i < 100; i++) {
 				String filename = children[i];
 				cp = new CoPhieu();
 				cp.FileName = filename;
@@ -38,7 +39,7 @@ public class TinhCoPhieu {
 	public void phanCum() {
 		double max = 0;
 		for (CoPhieu coPhieu : Ds100CoPhieu) {
-			coPhieu.tinhTrungBinh(500);
+			coPhieu.tinhTrungBinh(ThoiGianBatDau);
 		}
 		// sap xep theo trend 200
 		Collections.sort(Ds100CoPhieu, new Comparator<CoPhieu>() {
@@ -64,11 +65,15 @@ public class TinhCoPhieu {
 		int change = 1, count = 1;
 
 		while (change != 0) {
+			for (Cum centroid : listCentroid) {
+				centroid.SoLuongPhanTu = 0;
+			}
 			change = 0;
 			for (CoPhieu coPhieu : Ds100CoPhieu) {
 				double min = Double.MAX_VALUE, temp = 0;
 				int cum = -1;
 				for (Cum centroid : listCentroid) {
+
 					temp = Math.sqrt(Math.pow(coPhieu.Trend200 - centroid.Trend200, 2)
 							+ Math.pow(coPhieu.Trend50 - centroid.Trend50, 2)
 							+ Math.pow(coPhieu.Momentum125 - centroid.Momentum125, 2)
@@ -92,13 +97,13 @@ public class TinhCoPhieu {
 			for (Cum centroid : listCentroid) {
 				System.out.print("cum" + listCentroid.indexOf(centroid) + ": " + centroid.SoLuongPhanTu + "||");
 				centroid.xacDinhTam();
-				centroid.SoLuongPhanTu = 0;
 			}
 			System.out.println("");
 
 			count++;
 		}
 		for (Cum cum : listCentroid) {
+			
 			System.out.println("Cum " + listCentroid.indexOf(cum) + ": " + cum.Trend200 + " || " + cum.Trend50 + " || "
 					+ cum.Momentum125 + " || " + cum.Momentum20);
 		}
@@ -122,32 +127,35 @@ public class TinhCoPhieu {
 
 		for (CoPhieu cp : Ds100CoPhieu) {
 
-			double gia = cp.GiaHienTai, longTerm = cp.Trend200, shortTerm = cp.Trend50, giaTruoc = cp.GiaTruoc,loiNhuan = 0;
-			
+			double gia = cp.GiaHienTai, longTerm = cp.Trend200, shortTerm = cp.Trend50, giaTruoc = cp.GiaTruoc,
+					loiNhuan = 0;
+
 			CSV ghifile = new CSV();
 			ghifile.taoMoiFileLichSu(cp);
 			for (int i = 0; i < 20; i++) {
 				giaTruoc = cp.GiaTruoc;
-				cp.tinhEMA();
-				gia = cp.GiaHienTai;
-				longTerm = cp.Trend200;
-				shortTerm = cp.Trend50;
-				loiNhuan = (gia - giaTruoc)/gia * 100  ;
-				if (gia > longTerm && gia > shortTerm && loiNhuan > TiLeLoiNhuan)
-					cp.SoLuong += 100;
-				else if (gia > longTerm && gia <= shortTerm && loiNhuan > TiLeLoiNhuan)
-					cp.SoLuong += 50;
+				if (cp.tinhEMA()) {
+					gia = cp.GiaHienTai;
+					longTerm = cp.Trend200;
+					shortTerm = cp.Trend50;
+					loiNhuan = (gia - giaTruoc) / gia * 100;
+					if (gia > longTerm && gia > shortTerm && loiNhuan > TiLeLoiNhuan)
+						cp.SoLuong += 100;
+					else if (gia > longTerm && gia <= shortTerm && loiNhuan > TiLeLoiNhuan)
+						cp.SoLuong += 50;
 
-				else if (gia < longTerm && gia < shortTerm && -loiNhuan > -TiLeLoiNhuan) {
-					if (cp.SoLuong >= 100)
-						cp.SoLuong -= 100;
-					else
-						cp.SoLuong = 0;
-				} else if (gia > longTerm && gia >= shortTerm && -loiNhuan > -TiLeLoiNhuan) {
-					if (cp.SoLuong >= 50)
-						cp.SoLuong -= 50;
-					else
-						cp.SoLuong = 0;
+					else if (gia < longTerm && gia < shortTerm && -loiNhuan > -TiLeLoiNhuan) {
+						if (cp.SoLuong >= 100)
+							cp.SoLuong -= 100;
+						else
+							cp.SoLuong = 0;
+					} else if (gia > longTerm && gia >= shortTerm && -loiNhuan > -TiLeLoiNhuan) {
+						if (cp.SoLuong >= 50)
+							cp.SoLuong -= 50;
+						else
+							cp.SoLuong = 0;
+					}
+
 				}
 				ghifile.ghiFileLichSU(cp);
 			}
@@ -157,18 +165,23 @@ public class TinhCoPhieu {
 	public void tinhLoiNhuanThu() {
 		CSV docfile = new CSV();
 		for (CoPhieu coPhieu : Ds100CoPhieu) {
-			coPhieu.LoiNhuan = docfile.docFileLichSu(coPhieu);
-			listCentroid.get(coPhieu.Cum).LoiNhuan += docfile.docFileLichSu(coPhieu);
-
+			docfile.DocfileLichSu(coPhieu);
+			System.out.println("CP: " + coPhieu.FileName + " || " + " Loi Nhuan: " + coPhieu.LoiNhuan + " || "
+					+ " Ty le loi nhuan: " + (coPhieu.LoiNhuan / coPhieu.TienDauTu) * 100);
+			listCentroid.get(coPhieu.Cum).LoiNhuan += coPhieu.LoiNhuan;
+			listCentroid.get(coPhieu.Cum).DauTu += coPhieu.TienDauTu;
+			listCentroid.get(coPhieu.Cum).TyleLoiNhuan += round((coPhieu.LoiNhuan / coPhieu.TienDauTu) * 100, 2);
 		}
 
 		double bestProfit = 0;
 		for (Cum cum : listCentroid) {
-			if (bestProfit < cum.LoiNhuan) {
-				bestProfit = cum.LoiNhuan;
+			cum.TyleLoiNhuan =  cum.TyleLoiNhuan / cum.SoLuongPhanTu;
+			if (bestProfit < cum.TyleLoiNhuan) {
+				bestProfit = cum.TyleLoiNhuan;
 				CumTotNhat = listCentroid.indexOf(cum);
 			}
-			System.out.println("Cum: " + listCentroid.indexOf(cum) + " || " + " Loi Nhuan: " + cum.LoiNhuan);
+			System.out.println("Cum: " + listCentroid.indexOf(cum) + " || " + " Loi Nhuan: " + cum.LoiNhuan + " || "
+					+ " Ty le loi nhuan: " + cum.TyleLoiNhuan);
 		}
 	}
 
@@ -194,10 +207,14 @@ public class TinhCoPhieu {
 					return 0;
 			}
 		});
-		
-		System.out.println("Tam: " + centroid.Trend200 + " || " +  centroid.Trend50 + " || " +  centroid.Momentum125 + " || " +  centroid.Momentum20);
+		System.out.println();
+		System.out.println("Cum: " + listCentroid.indexOf(centroid)  + " || " + "Tam: " + centroid.Trend200 + " || " + centroid.Trend50 + " || " + centroid.Momentum125
+				+ " || " + centroid.Momentum20);
 		for (int i = 0; i < 10; i++) {
-			System.out.println("CoPhieu: " + Ds100CoPhieu.get(i).FileName+ " || " +  Ds100CoPhieu.get(i).Cum + " || " +  Ds100CoPhieu.get(i).Trend200 + " || " +  Ds100CoPhieu.get(i).Trend50 + " || " +  Ds100CoPhieu.get(i).Momentum125 + " || " +  Ds100CoPhieu.get(i).Momentum20 + " || " +  Ds100CoPhieu.get(i).LoiNhuan + " || " +  Ds100CoPhieu.get(i).KhoanCach);
+			System.out.println("CoPhieu: " + Ds100CoPhieu.get(i).FileName + " || " + Ds100CoPhieu.get(i).Cum + " || "
+					+ Ds100CoPhieu.get(i).Trend200 + " || " + Ds100CoPhieu.get(i).Trend50 + " || "
+					+ Ds100CoPhieu.get(i).Momentum125 + " || " + Ds100CoPhieu.get(i).Momentum20 + " || "
+					+ Ds100CoPhieu.get(i).LoiNhuan + " || " + Ds100CoPhieu.get(i).KhoanCach);
 		}
 	}
 
@@ -210,13 +227,24 @@ public class TinhCoPhieu {
 		return super.toString();
 	}
 
+	public static double round(double value, int places) {
+		if (places < 0)
+			throw new IllegalArgumentException();
+
+		long factor = (long) Math.pow(10, places);
+		value = value * factor;
+		long tmp = Math.round(value);
+		return (double) tmp / factor;
+	}
+
 	public static void main(String[] args) {
 		TinhCoPhieu a = new TinhCoPhieu();
+		a.ThoiGianBatDau = "20101022";
 		a.layDanhSachCoPhieu();
 		a.phanCum();
 		a.toString();
 		a.tinhMuaBanThu();
 		a.tinhLoiNhuanThu();
-		a.xepHang();
+		 a.xepHang();
 	}
 }

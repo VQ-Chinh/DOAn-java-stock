@@ -1,12 +1,15 @@
 
 public class Cum extends ThuocTinh {
 	
+	public int ID;
 	public int SoLuongPhanTu;
 	public double TongTrend200;
 	public double TongTrend50;
 	public double TongMomentum125;
 	public double TongMomentum20;
 	public double LoiNhuan;
+	public double DauTu;
+	public double TyleLoiNhuan = 0;
 	public Cum(CoPhieu cp){
 		this.Trend200 = cp.Trend200;
 		this.Trend50 = cp.Trend50;
