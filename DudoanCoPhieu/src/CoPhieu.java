@@ -16,7 +16,6 @@ public class CoPhieu extends ThuocTinh {
 	public int Cum;
 	public int SoLuong;
 	public String NgayBatDau;
-	public String ThoiGianBatDau;
 	public float ChiSoOnDinh;
 	public String FileName;
 	public double GiaTruoc;
@@ -27,7 +26,7 @@ public class CoPhieu extends ThuocTinh {
 	private double K125 = 2.0 / (125 + 1);
 	private double K50 = 2.0 / (50 + 1);
 	private double K20 = 2.0 / (20 + 1);
-	private SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+	public static SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
 
 	public CoPhieu() {
 
@@ -44,7 +43,7 @@ public class CoPhieu extends ThuocTinh {
 		try {
 			CsvReader docfile = new CsvReader("cophieu68.vn/" + FileName);
 			NgayBatDau = ngayBatDau;
-			docFileTaiNgay(docfile, ngayBatDau,0);
+			docFileTaiNgay(docfile, ngayBatDau, 0);
 			// Tinh trung binh ngay truoc
 			double EMA200 = 0, EMA50 = 0, EMA125 = 0, EMA20 = 0, temp = 0, price200 = 0, price125 = 0, price50 = 0,
 					price20 = 0;
@@ -66,8 +65,9 @@ public class CoPhieu extends ThuocTinh {
 					EMA50 = EMA50 + temp;
 				if (i <= 20)
 					EMA20 = EMA20 + temp;
-//				System.out.println(i + " | " + docfile.get(1) + " | " + temp + " | " + EMA200 + " | " + EMA125 + " | "
-//						+ EMA50 + " | " + EMA20 + " | " + timeRemain);
+				// System.out.println(i + " | " + docfile.get(1) + " | " + temp
+				// + " | " + EMA200 + " | " + EMA125 + " | "
+				// + EMA50 + " | " + EMA20 + " | " + timeRemain);
 				if (i == 1)
 					GiaHienTai = temp;
 				if (i == 2)
@@ -79,8 +79,9 @@ public class CoPhieu extends ThuocTinh {
 			Momentum125 = (temp - price125) / price125 * 100;
 			Trend50 = EMA50 / 50;
 			Momentum20 = (temp - price20) / price20 * 100;
-//			System.out.println(FileName + docfile.get(1) + " | " + docfile.get(5) + " | " + EMA200);
-			
+			// System.out.println(FileName + docfile.get(1) + " | " +
+			// docfile.get(5) + " | " + EMA200);
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -97,9 +98,9 @@ public class CoPhieu extends ThuocTinh {
 		boolean key;
 		try {
 			docfile = new CsvReader("cophieu68.vn_Choice/" + FileName);
-			docFileTaiNgay(docfile, NgayBatDau,1);
+			docFileTaiNgay(docfile, NgayBatDau, 1);
 			String test = docfile.get(1);
-			key =test.equals(NgayBatDau);
+			key = test.equals(NgayBatDau);
 			if (key) {
 				GiaTruoc = GiaHienTai;
 				temp = Float.parseFloat(docfile.get(5));
@@ -108,37 +109,22 @@ public class CoPhieu extends ThuocTinh {
 				Momentum125 = Momentum125 + K125 * (temp - Momentum125);
 				Trend50 = Trend50 + K50 * (temp - Trend50);
 				Momentum20 = Momentum20 + K20 * (temp - Momentum20);
-//				System.out.println(docfile.get(1) + " | " + temp + " | " + Trend200 + " | " + Momentum125 + " | "
-//						+ Trend50 + " | " + Momentum20);
+				// System.out.println(docfile.get(1) + " | " + temp + " | " +
+				// Trend200 + " | " + Momentum125 + " | "
+				// + Trend50 + " | " + Momentum20);
 			}
-//			else
-//				System.out.println(NgayBatDau + " ko giao dich ");
-			Date time = format.parse(NgayBatDau);
-			time = addDays(time, 1);
-			NgayBatDau = format.format(time);
-				return key;
-			
+			// else
+			// System.out.println(NgayBatDau + " ko giao dich ");
+
+			return key;
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
-			Date time;
-			try {
-//				System.out.println(NgayBatDau + " ko giao dich ");
-				time = format.parse(NgayBatDau);
-				time = addDays(time, 1);
-				NgayBatDau = format.format(time);
 
-			} catch (ParseException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			return false;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -156,7 +142,7 @@ public class CoPhieu extends ThuocTinh {
 		}
 	}
 
-	public void docFileTaiNgay(CsvReader docfile, String ngayBatDau,int key) {
+	public void docFileTaiNgay(CsvReader docfile, String ngayBatDau, int key) {
 		try {
 			docfile.readRecord();
 			docfile.readRecord();
@@ -166,11 +152,11 @@ public class CoPhieu extends ThuocTinh {
 
 				preDate = stringDate;
 				stringDate = docfile.get(1);
-				if (Integer.parseInt(stringDate) - Integer.parseInt(ngayBatDau) < 0 && key ==0)
+				if (Integer.parseInt(stringDate) - Integer.parseInt(ngayBatDau) < 0 && key == 0)
 					break;
-				if (Integer.parseInt(stringDate) - Integer.parseInt(ngayBatDau) > 0 && key ==1)
+				if (Integer.parseInt(stringDate) - Integer.parseInt(ngayBatDau) > 0 && key == 1)
 					break;
-//				 System.out.println(docfile.get(1));
+				// System.out.println(docfile.get(1));
 
 			}
 		} catch (IOException e) {
@@ -180,11 +166,56 @@ public class CoPhieu extends ThuocTinh {
 
 	}
 
-	public static Date addDays(Date date, int days) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		cal.add(Calendar.DATE, days); // minus number would decrement the days
-		return cal.getTime();
+	public void nextDays(){
+		Date time;
+		try {
+			time = format.parse(NgayBatDau);
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(time);
+			cal.add(Calendar.DATE, 1); // minus number would decrement the
+											// days
+			NgayBatDau =  format.format(cal.getTime());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static String addDaysS(String date, int days) {
+		Date time;
+		try {
+			time = format.parse(date);
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(time);
+			cal.add(Calendar.DATE, days); // minus number would decrement the
+											// days
+			return format.format(cal.getTime());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+	public static String removeDaysS(String date, int days) {
+		Date time;
+		try {
+			time = format.parse(date);
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(time);
+			cal.add(Calendar.DATE, -days); // minus number would decrement the
+											// days
+			return format.format(cal.getTime());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+	public void clearData() {
+		SoLuong = 0;
+		LoiNhuan = 0;
 	}
 
 	@Override

@@ -93,7 +93,7 @@ public class CSV {
 				Docfile.readHeaders();
 				Docfile.readRecord();
 				CoPhieu cp = new CoPhieu();
-				cp.ThoiGianBatDau = Docfile.get(1);
+				cp.NgayBatDau = Docfile.get(1);
 				Date pDate, date = new Date();
 				pDate = format.parse(Docfile.get(1));
 				if (TimeUnit.DAYS.convert(dateRequi.getTime()-pDate.getTime() , TimeUnit.MILLISECONDS) > 200) {
@@ -112,7 +112,7 @@ public class CSV {
 					}
 					float chiso = ngayChenhLech * 1f / count;
 					if (chiso < 1.49 & TimeUnit.DAYS.convert(date.getTime() - dateRequi.getTime(), TimeUnit.MILLISECONDS) >1000) {
-						System.out.println(j + " Ten: " + fileName + ", ngaybatdau: " + cp.ThoiGianBatDau
+						System.out.println(j + " Ten: " + fileName + ", ngaybatdau: " + cp.NgayBatDau
 								+ ", DO on dinh: " + (ngayChenhLech + 0.0) / count);
 						num++;
 						//revertFile(fileName);
@@ -133,11 +133,11 @@ public class CSV {
 		System.out.println(num);
 	}
 
-	public void ghiFileLichSU(CoPhieu cp) {
+	public void ghiFileLichSU(CoPhieu cp,String path) {
 		FileWriter pw;
 		try {
 
-			File file = new File("LichSu/" + cp.FileName);
+			File file = new File(path + cp.FileName);
 			String content = "";
 			content += cp.NgayBatDau + "," + cp.SoLuong + "," + cp.GiaHienTai + "\n";
 			pw = new FileWriter(file.getPath(), true);
@@ -150,12 +150,36 @@ public class CSV {
 			e.printStackTrace();
 		}
 	}
+	
+	public void ghiFileLichSuGiaoDich(CoPhieu cp) {
+		FileWriter pw;
+		BufferedWriter bw;
+		try {
 
-	public void taoMoiFileLichSu(CoPhieu cp) {
+			File file = new File("LichSuGiaoDich/" + cp.FileName);
+			String content = "";
+			 if (!file.exists()) {
+		           file.createNewFile();
+		           content = "<ngay>,<sl>,<gia>\n";
+		        }
+			 content += cp.NgayBatDau + "," + cp.SoLuong + "," + cp.GiaHienTai + "\n";
+			pw = new FileWriter(file.getPath(),true);
+			 bw = new BufferedWriter(pw);
+			bw.write(content);
+			bw.close();
+			// System.out.println(content);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			
+			e.printStackTrace();
+		}
+	}
+
+	public void taoMoiFileLichSu(CoPhieu cp, String path) {
 		FileWriter pw;
 		try {
 
-			File file = new File("LichSu/" + cp.FileName);
+			File file = new File(path + cp.FileName);
 			String content = "<ngay>,<sl>,<gia>\n";
 			;
 
@@ -172,9 +196,9 @@ public class CSV {
 
 	
 
-	public void DocfileLichSu(CoPhieu cp) {
+	public void DocfileLichSu(CoPhieu cp,String path, String date) {
 		try {
-			Docfile = new CsvReader("LichSu/" + cp.FileName);
+			Docfile = new CsvReader(path + cp.FileName);
 			Docfile.readHeaders();
 
 			int slTruoc = 0, count = 0, range = Docfile.getHeaderCount();
@@ -182,8 +206,13 @@ public class CSV {
 			// Duyet qua tung ROW - Dong du lieu
 			String temp = "";
 			// while (Docfile.readRecord()) {
+			while (Docfile.readRecord() ) {
+				 if(Docfile.get(0).equals(date))
+					 break;
+			}
+			
 			for (int i = 0; i < 19; i++) {
-				Docfile.readRecord();
+				
 				// Lay bang Ten Cot
 				temp = "";
 				// for (i = 0; i < range - 1; i++) {
@@ -197,9 +226,9 @@ public class CSV {
 				// System.out.println(
 				// count++ + " " + Docfile.get(0) + " " + Docfile.get(1) + " " +
 				// Docfile.get(2) + " = " + tien);
+				Docfile.readRecord();
 			}
 
-			Docfile.readRecord();
 			tien += Float.parseFloat(Docfile.get(2)) * slTruoc;
 			// System.out.println(
 			// count++ + " " + Docfile.get(0) + " " + Docfile.get(2) + " = " +
@@ -214,11 +243,20 @@ public class CSV {
 			e.printStackTrace();
 		}
 	}
+	
+	public void clearFileLichSu(){
+		File index = new File("LichSuGiaoDich");
+		String[]entries = index.list();
+		for(String s: entries){
+		    File currentFile = new File(index.getPath(),s);
+		    currentFile.delete();
+		}
+	}
 
 	public static void main(String[] args) throws FileNotFoundException {
 		// CSV test = new CSV();
-		// CoPhieu cp = new CoPhieu();
-		// cp.FileName = "excel_bvh.csv";
+		 CoPhieu cp = new CoPhieu();
+		 cp.FileName = "excel_bvh.csv";
 		// System.out.println(test.DocfileLichSu(cp));
 
 		String sourceDate = "20100104";
@@ -243,6 +281,8 @@ public class CSV {
 		// cal.getTime().getTime(), TimeUnit.MILLISECONDS));
 
 		CSV test = new CSV();
-		test.locCoPhieu("20100104");
+		//test.locCoPhieu("20100104");
+		// new File("abc").mkdir();
+		test.clearFileLichSu();
 	}
 }

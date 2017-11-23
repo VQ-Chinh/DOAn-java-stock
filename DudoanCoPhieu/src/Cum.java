@@ -27,4 +27,8 @@ public class Cum extends ThuocTinh {
 		TongMomentum125 = 0;
 		TongMomentum20 = 0;
 	}
+	
+	public void tinhTyLeLoiNhuan(){
+		TyleLoiNhuan += TinhCoPhieu.round((LoiNhuan / DauTu) * 100, 2);
+	}
 }
