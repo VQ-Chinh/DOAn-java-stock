@@ -16,12 +16,14 @@ public class CoPhieu extends ThuocTinh {
 	public int Cum;
 	public int SoLuong;
 	public String NgayBatDau;
+	public String NgayDanhGia;
 	public float ChiSoOnDinh;
 	public String FileName;
-	public double GiaTruoc;
-	public double GiaHienTai;
+	public float GiaNgay20;
+	public float GiaTruoc;
+	public float GiaHienTai;
 	public float Period = 200;
-	public double TienDauTu = 0;
+	public float TienDauTu = 0;
 	private double K200 = 2.0 / (200 + 1);
 	private double K125 = 2.0 / (125 + 1);
 	private double K50 = 2.0 / (50 + 1);
@@ -45,7 +47,7 @@ public class CoPhieu extends ThuocTinh {
 			NgayBatDau = ngayBatDau;
 			docFileTaiNgay(docfile, ngayBatDau, 0);
 			// Tinh trung binh ngay truoc
-			double EMA200 = 0, EMA50 = 0, EMA125 = 0, EMA20 = 0, temp = 0, price200 = 0, price125 = 0, price50 = 0,
+			float EMA200 = 0, EMA50 = 0, EMA125 = 0, EMA20 = 0, temp = 0, price200 = 0, price125 = 0, price50 = 0,
 					price20 = 0;
 			int timeRemain = 0;
 			for (int i = 1; i < 200 + 1; i++) {
@@ -93,7 +95,7 @@ public class CoPhieu extends ThuocTinh {
 	}
 
 	public boolean tinhEMA() {
-		double temp;
+		float temp;
 		CsvReader docfile;
 		boolean key;
 		try {
@@ -215,13 +217,22 @@ public class CoPhieu extends ThuocTinh {
 
 	public void clearData() {
 		SoLuong = 0;
-		LoiNhuan = 0;
 	}
 
 	@Override
 	public String toString() {
 
 		return FileName + " || " + Trend200 + " || " + Trend50 + " || " + Momentum125 + " || " + Momentum20;
+	}
+	
+	public static double round(double value, int places) {
+		if (places < 0)
+			throw new IllegalArgumentException();
+
+		long factor = (long) Math.pow(10, places);
+		value = value * factor;
+		long tmp = Math.round(value);
+		return (float) tmp / factor;
 	}
 
 	public static void main(String[] args) {

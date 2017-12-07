@@ -96,7 +96,7 @@ public class CSV {
 				cp.NgayBatDau = Docfile.get(1);
 				Date pDate, date = new Date();
 				pDate = format.parse(Docfile.get(1));
-				if (TimeUnit.DAYS.convert(dateRequi.getTime()-pDate.getTime() , TimeUnit.MILLISECONDS) > 200) {
+				if (TimeUnit.DAYS.convert(dateRequi.getTime() - pDate.getTime(), TimeUnit.MILLISECONDS) > 200) {
 					int ngayChenhLech = 0, count = 0, range = Docfile.getHeaderCount();
 					double tien = 0;
 					// Duyet qua tung ROW - Dong du lieu
@@ -111,11 +111,12 @@ public class CSV {
 						count++;
 					}
 					float chiso = ngayChenhLech * 1f / count;
-					if (chiso < 1.49 & TimeUnit.DAYS.convert(date.getTime() - dateRequi.getTime(), TimeUnit.MILLISECONDS) >1000) {
-						System.out.println(j + " Ten: " + fileName + ", ngaybatdau: " + cp.NgayBatDau
-								+ ", DO on dinh: " + (ngayChenhLech + 0.0) / count);
+					if (chiso < 1.49 & TimeUnit.DAYS.convert(date.getTime() - dateRequi.getTime(),
+							TimeUnit.MILLISECONDS) > 1000) {
+						System.out.println(j + " Ten: " + fileName + ", ngaybatdau: " + cp.NgayBatDau + ", DO on dinh: "
+								+ (ngayChenhLech + 0.0) / count);
 						num++;
-						//revertFile(fileName);
+						// revertFile(fileName);
 					}
 				}
 			} catch (FileNotFoundException e) {
@@ -133,7 +134,7 @@ public class CSV {
 		System.out.println(num);
 	}
 
-	public void ghiFileLichSU(CoPhieu cp,String path) {
+	public void ghiFileLichSU(CoPhieu cp, String path) {
 		FileWriter pw;
 		try {
 
@@ -150,7 +151,7 @@ public class CSV {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void ghiFileLichSuGiaoDich(CoPhieu cp) {
 		FileWriter pw;
 		BufferedWriter bw;
@@ -158,19 +159,19 @@ public class CSV {
 
 			File file = new File("LichSuGiaoDich/" + cp.FileName);
 			String content = "";
-			 if (!file.exists()) {
-		           file.createNewFile();
-		           content = "<ngay>,<sl>,<gia>\n";
-		        }
-			 content += cp.NgayBatDau + "," + cp.SoLuong + "," + cp.GiaHienTai + "\n";
-			pw = new FileWriter(file.getPath(),true);
-			 bw = new BufferedWriter(pw);
+			if (!file.exists()) {
+				file.createNewFile();
+				content = "<ngay>,<sl>,<gia>\n";
+			}
+			content += cp.NgayBatDau + "," + cp.SoLuong + "," + cp.GiaHienTai + "\n";
+			pw = new FileWriter(file.getPath(), true);
+			bw = new BufferedWriter(pw);
 			bw.write(content);
 			bw.close();
 			// System.out.println(content);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			
+
 			e.printStackTrace();
 		}
 	}
@@ -194,47 +195,31 @@ public class CSV {
 		}
 	}
 
-	
-
-	public void DocfileLichSu(CoPhieu cp,String path, String date) {
+	public void docfileLichSu(CoPhieu cp) {
 		try {
-			Docfile = new CsvReader(path + cp.FileName);
+			Docfile = new CsvReader("LichSuGiaoDich/" + cp.FileName);
 			Docfile.readHeaders();
 
 			int slTruoc = 0, count = 0, range = Docfile.getHeaderCount();
-			double tien = 0,tienDauTu = 0;
+			double tien = 0, tienDauTu = 0;
 			// Duyet qua tung ROW - Dong du lieu
 			String temp = "";
-			// while (Docfile.readRecord()) {
-			while (Docfile.readRecord() ) {
-				 if(Docfile.get(0).equals(date))
-					 break;
-			}
-			
-			for (int i = 0; i < 19; i++) {
-				
-				// Lay bang Ten Cot
-				temp = "";
-				// for (i = 0; i < range - 1; i++) {
-				// temp += Docfile.get(i) + ",";
-				// }
-				if(Integer.parseInt(Docfile.get(1)) - slTruoc >0)
-					tienDauTu += Float.parseFloat(Docfile.get(2)) * (Integer.parseInt(Docfile.get(1)) - slTruoc);
-				tien += Float.parseFloat(Docfile.get(2)) * (slTruoc - Integer.parseInt(Docfile.get(1)));
-				slTruoc = Integer.parseInt(Docfile.get(1));
-
-				// System.out.println(
-				// count++ + " " + Docfile.get(0) + " " + Docfile.get(1) + " " +
-				// Docfile.get(2) + " = " + tien);
-				Docfile.readRecord();
+			// while (Docfile.readRecord()) {\
+			int soluong = 0;
+			float tongtien = 0;
+			while (Docfile.readRecord()) {
+				if (Integer.parseInt(Docfile.get(1)) > 0) {
+					soluong += Integer.parseInt(Docfile.get(1));
+					tongtien += Integer.parseInt(Docfile.get(1)) * Float.parseFloat(Docfile.get(2));
+				} else {
+					soluong = 0;
+					tongtien = 0;
+				}
+				break;
 			}
 
-			tien += Float.parseFloat(Docfile.get(2)) * slTruoc;
-			// System.out.println(
-			// count++ + " " + Docfile.get(0) + " " + Docfile.get(2) + " = " +
-			// tien);
-			cp.LoiNhuan = tien;
-			cp.TienDauTu = tienDauTu;
+			cp.TienDauTu = tongtien;
+			cp.SoLuong = soluong;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -243,20 +228,89 @@ public class CSV {
 			e.printStackTrace();
 		}
 	}
-	
-	public void clearFileLichSu(){
+
+	public void docfileLichSuTatca(CoPhieu cp) {
+		try {
+			File index = new File("LichSuGiaoDich");
+			String[] entries = index.list();
+			for (String s : entries) {
+				Docfile = new CsvReader(index.getPath()+ s);
+				Docfile.readHeaders();
+
+				int slTruoc = 0, count = 0, range = Docfile.getHeaderCount();
+				double tien = 0, tienDauTu = 0;
+				// Duyet qua tung ROW - Dong du lieu
+				String temp = "";
+				// while (Docfile.readRecord()) {\
+				int soluong = 0;
+				float tongtien = 0;
+				while (Docfile.readRecord()) {
+					if (Integer.parseInt(Docfile.get(1)) > 0) {
+						soluong += Integer.parseInt(Docfile.get(1));
+						tongtien += Integer.parseInt(Docfile.get(1)) * Float.parseFloat(Docfile.get(2));
+					} else {
+						soluong = 0;
+						tongtien = 0;
+					}
+					break;
+				}
+
+				cp.TienDauTu = tongtien;
+				cp.SoLuong = soluong;
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void clearFileLichSu() {
 		File index = new File("LichSuGiaoDich");
-		String[]entries = index.list();
-		for(String s: entries){
-		    File currentFile = new File(index.getPath(),s);
-		    currentFile.delete();
+		String[] entries = index.list();
+		for (String s : entries) {
+			File currentFile = new File(index.getPath(), s);
+			currentFile.delete();
+		}
+	}
+
+	public boolean kiemtraCPTon(CoPhieu cp) {
+		try {
+			File f = new File("LichSuGiaoDich/" + cp.FileName);
+			if (!f.exists())
+				return false;
+			Docfile = new CsvReader("LichSuGiaoDich/" + cp.FileName);
+			Docfile.readHeaders();
+			String soluong = "0";
+			int tongsoluong = 0;
+			while (Docfile.readRecord()) {
+				soluong = Docfile.get(1);
+				tongsoluong += Integer.parseInt(soluong);
+				if(Integer.parseInt(soluong) == 0)
+					tongsoluong = 0;
+			}
+			cp.SoLuong = tongsoluong;
+			if (Integer.parseInt(soluong) == 0)
+				return false;
+			return true;
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
 		}
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
 		// CSV test = new CSV();
-		 CoPhieu cp = new CoPhieu();
-		 cp.FileName = "excel_bvh.csv";
+		CoPhieu cp = new CoPhieu();
+		cp.FileName = "excel_bvh.csv";
 		// System.out.println(test.DocfileLichSu(cp));
 
 		String sourceDate = "20100104";
@@ -281,7 +335,7 @@ public class CSV {
 		// cal.getTime().getTime(), TimeUnit.MILLISECONDS));
 
 		CSV test = new CSV();
-		//test.locCoPhieu("20100104");
+		// test.locCoPhieu("20100104");
 		// new File("abc").mkdir();
 		test.clearFileLichSu();
 	}
